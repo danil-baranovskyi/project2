@@ -1,21 +1,19 @@
 import {sleep} from "./sleep.js";
-import {MongoDb, MySql, PostgreSql} from "../db/index.js";
+
 import {CanNotConnection} from "../errors/CanNotConnection.js";
+import {randomFromTo} from "./randomFromTo.js";
+import {getDbArr} from "./getDbArr.js";
 
-const allowedDatabases = [
-    MySql, PostgreSql, MongoDb
-]
-
-export async function connect (db) {
-    let dbCopy;
-    if (allowedDatabases.includes(db)) {
-        dbCopy = new db();
-    } else {
+export async function connect(db) {
+    if (!getDbArr().includes(db)) {
         throw new CanNotConnection;
     }
-    console.log("Preparing connection to ", dbCopy.name , "...")
-    await sleep(5);
-    console.log("Connection to ", dbCopy.name , "done successfully!!!")
-    return dbCopy
-}
 
+    let dbCopy = new db();
+
+    console.log("Preparing connection to ", dbCopy.name, "...");
+    await sleep(randomFromTo(1, 3));
+    console.log("Connection to ", dbCopy.name, "done successfully!!!");
+
+    return dbCopy;
+}

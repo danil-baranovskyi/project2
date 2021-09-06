@@ -1,28 +1,21 @@
 import {connect} from "./functions/connect.js";
-
-import {MongoDb, MySql, PostgreSql} from "./db/index.js";
-import {sleep} from "./functions/sleep.js";
 import {CanNotConnection} from "./errors/CanNotConnection.js";
+import {asyncData} from "./functions/asyncData.js";
+import {getDbArr} from "./functions/getDbArr.js";
 
-async function some() {
-    return Promise.all([connect(MongoDb), connect(MySql), connect(PostgreSql)])
+async function asyncDbConnection(dbArr) {
+
+    return Promise.all(dbArr.map(e => connect(e)))
 }
+
+let dbArr = [];
+
 try {
-    await some().then();
+    dbArr = await asyncDbConnection(getDbArr());
 } catch (e) {
-    if(e instanceof CanNotConnection) {
+    if (e instanceof CanNotConnection) {
         console.log("Unknown name of Data Base");
     }
 }
-// connect(PostgreSql).then()
-// console.log(connect(MongoDb).then())
-const MongoDbCopy = new MongoDb();
 
-let today;
-
-for (let i = 0; i < 10; i++){
-    today = new Date();
-    await MongoDbCopy.getRow(i).then();
-}
-
-// console.log(Date.now())
+dbArr.map(e => asyncData(e));
